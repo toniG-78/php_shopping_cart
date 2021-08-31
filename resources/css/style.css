@@ -252,12 +252,12 @@ h1 {
   width: 100px;
 }
 
-.shoppingcart .buttons_row {
+.buttons_row {
   position: relative;
   top: -101px;
 }
 
-.shoppingcart .submit_row {
+.submit_row {
   float: right;
   margin: 10px 0 30px;
 }

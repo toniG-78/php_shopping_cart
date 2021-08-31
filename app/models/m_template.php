@@ -43,7 +43,7 @@ class Template {
    * Saves provided data for use by the view later
    * @access public
    * @param string $name
-   * @param string $value
+   * @param $value
    * @param boolean $clean (optional)
    * @return void
    */

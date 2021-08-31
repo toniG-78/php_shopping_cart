@@ -8,8 +8,10 @@
   <title> <? $this->get_data("page_title"); ?> </title>
 </head>
 
-<body class="">
+<body class="<? $this->get_data("page_class") ?>">
+
 	<div id="wrapper">
+
 		<div class="secondarynav">
 			<strong>0 items (0,00 €) in cart</strong> &nbsp;| &nbsp;
 			<!-- Go to cart page -->

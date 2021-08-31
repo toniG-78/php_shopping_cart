@@ -32,9 +32,9 @@ class Categories {
 
     if ($id != NULL){
 
+      // Get specific category
       $query = "SELECT id, name FROM " . $this->db_table . " WHERE id = ? LIMIT 1";
 
-      // Get category
       if($stmt = $this->Database->prepare($query)){
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -52,9 +52,10 @@ class Categories {
       }
 
     } else {
+      
+      // get All categories
       $query = "SELECT * FROM " . $this->db_table . " ORDER BY name";
 
-      // get All categories
       if($result = $this->Database->query($query)){
         if($result->num_rows > 0){
           while($row = $result->fetch_array()){
@@ -69,7 +70,7 @@ class Categories {
     return $data;
   }
 
-    /*
+  /*
     Create categories nav menu
   */
 

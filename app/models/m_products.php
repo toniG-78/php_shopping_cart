@@ -20,10 +20,10 @@ class Products {
   */
 
   /**
-   * Retrive product info from database
+   * Retrive product(s) info from database
    *
    * @access public
-   * @param integer $id (optional)
+   * @param integer, array $id (optional)
    * @return array
    */
   public function get($id = NULL) {
@@ -31,10 +31,33 @@ class Products {
     $data = array();
 
     if (is_array($id)){
-      // get products based on array of id 
+      // get a list of products based on array of ids
+      // also used in Cart model 
+      $items = "";
+      foreach ($id as $item_id) {
+        if($items != "") $items .=  ",";
+        $items .= $item_id;
+      } // 1,2,3,4,5....
+
+      $query = "SELECT id, name, description, price, image FROM $this->db_table WHERE id IN ($items) ORDER BY name";
+
+      if ($result = $this->Database->query($query)){
+        if($result->num_rows > 0){
+          while($row = $result->fetch_array()) {
+            $data[] = array(
+              "id"        => $row["id"],
+              "name"      => $row["name"],
+              "description" => $row["description"],
+              "price"       => $row["price"],
+              "image"       => $row["image"]
+            );
+          }
+        }
+      }
 
     } else if ($id != NULL) {
 
+      // get one specific product
       $query = "SELECT 
         $this->db_table.id,
         $this->db_table.name,
@@ -45,7 +68,6 @@ class Products {
         FROM $this->db_table, categories
         WHERE $this->db_table.id = ? AND $this->db_table.category_id = categories.id";
 
-      // get one specific product
       if($stmt = $this->Database->prepare($query)) {
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -67,10 +89,10 @@ class Products {
       }
 
     } else {
-
+      
+      // get All products
       $query = "SELECT * FROM " . $this->db_table . " ORDER BY name";
 
-      // get All products
       if($result = $this->Database->query($query)){
         if($result->num_rows > 0){
           while($row = $result->fetch_array()){
@@ -90,26 +112,88 @@ class Products {
     return $data;
   }
 
+
+  /**
+   * Retrive products info from database in a specific category
+   *
+   * @access public
+   * @param integer $category
+   * @return string
+   */
+  public function get_in_category($category_id) {
+
+    $data = array();
+
+    $query = "SELECT id, name, price, image FROM " . $this->db_table . " WHERE category_id = ? ORDER BY name";
+
+    if($stmt = $this->Database->prepare($query)) {
+      $stmt->bind_param("i", $category_id);
+      $stmt->execute();
+      $stmt->store_result(); // ?????
+      $stmt->bind_result($prod_id, $prod_name, $prod_price, $prod_img);
+
+      while($stmt->fetch()){
+        $data[] = array(
+          "id"    => $prod_id,
+          "name"  => $prod_name,
+          "price"  => $prod_price, 
+          "image"  => $prod_img
+        );
+      }
+      $stmt->close();
+    }
+    return $data;
+  }
+
+
+  /**
+   * Check if product exists before being added to Cart
+   *
+   * @param integer $id
+   * @return boolean
+   */
+  public function product_exist($id){
+
+    $query = "SELECT id FROM $this->db_table WHERE id = ?";
+
+    if ($stmt = $this->Database->prepare($query)){
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+      $stmt->store_result();
+      $stmt->bind_result($id);
+      $stmt->fetch();
+
+      if($stmt->num_rows > 0){
+        $stmt->close();
+        return TRUE;
+      }
+      $stmt->close();
+      return FALSE;
+    }
+  }
+
+
   /*
-      Create page elements
+      CREATE PAGE ELEMENTS
   */
 
   /**
    * Create product page items using data from db
    *
    * @access public
-   * @param integer $cols  (optional) //Todo: instead use css flexbox or grid
+   * @param integer $cols  (optional) 
    * @param integer $category (optional) 
    * @return string
    */
+  //TODO: instead of cols use css flexbox or grid
   public function create_product_items($cols = 4, $category = NULL){
 
     if($category != NULL){
-      // get products from specific category
-      
+      // products from specific category
+      $products = $this->get_in_category($category);      
 
     } else {
-      // get All products
+      // All products
       $products = $this->get();
     }
 
