@@ -13,7 +13,15 @@
 	<div id="wrapper">
 
 		<div class="secondarynav">
-			<strong>0 items (0,00 €) in cart</strong> &nbsp;| &nbsp;
+			<strong>
+				<?
+					$items = $this->get_data("total_products", FALSE);
+					$cost = $this->get_data("total_cost", FALSE);
+
+					if ($items === 1) echo $items . " product (" . $cost . " €) in cart";
+					else echo $items . " products (" . $cost . " €) in cart";
+				?>
+			</strong> &nbsp;| &nbsp;
 			<!-- Go to cart page -->
 			<a href="<? echo SITE_PATH ?>cart.php">Cart</a>
 		</div>

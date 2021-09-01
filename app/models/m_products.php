@@ -32,7 +32,7 @@ class Products {
 
     if (is_array($id)){
       // get a list of products based on array of ids
-      // also used in Cart model 
+      // also used in Cart class*** 
       $items = "";
       foreach ($id as $item_id) {
         if($items != "") $items .=  ",";
@@ -170,6 +170,38 @@ class Products {
       $stmt->close();
       return FALSE;
     }
+  }
+
+  /**
+   * Return an array of prices and ids for a group of product
+   *
+   * @access public
+   * @param array $ids
+   * @return array
+   */
+  public function get_product_prices($ids) {
+    // also used in Cart class*** 
+    $data = array();
+
+    $items = "";
+    foreach ($ids as $item_id) {
+      if($items != "") $items .=  ",";
+      $items .= $item_id;
+    } // 1,2,3,4,5....
+
+    $query = "SELECT id, price FROM $this->db_table WHERE id IN ($items) ORDER BY name";
+
+    if ($result = $this->Database->query($query)){
+      if($result->num_rows > 0){
+        while($row = $result->fetch_array()) {
+          $data[] = array(
+            "id"    => $row["id"],
+            "price" => $row["price"]
+          );
+        }
+      }
+    }
+    return $data;
   }
 
 

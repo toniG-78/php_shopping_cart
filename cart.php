@@ -30,13 +30,18 @@ if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
 // empty the car
 if (isset($_GET["empty"])) {
   $Cart->empty_car();
+  
+  // Show the total products and cost in Cart on top of the page
+  $Template->set_data("total_products", $Cart->get_total_items());
+  $Template->set_data("total_cost", $Cart->get_total_cost());
+
   $Template->set_alert("Cart is empty");
   $Template->redirect(SITE_PATH . "cart.php");
 }
 
 /*
   Form submitted when button Update Cart is clicked
-  input -> quantity of each product
+  update -> name attr of submit input
 */
 if (isset($_POST["update"])) {
   // get all products ids in cart
@@ -50,6 +55,11 @@ if (isset($_POST["update"])) {
         $Cart->update($id, $_POST["product" . $id]);
       }
     }
+
+    // Show the total products and cost in Cart on top of the page
+    $Template->set_data("total_products", $Cart->get_total_items());
+    $Template->set_data("total_cost", $Cart->get_total_cost());
+
     // add alert 
     $Template->set_alert("Quantity of products updated!!!");
   
